@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 	"os/exec"
+	"github.com/VladMak/golang_test/internal/usecase"
 )
 
 type config struct {
@@ -18,63 +19,16 @@ type config struct {
 }
 
 func main() {
-	// Инициализация входных параметров (у нас это только путь до файла конфигурации)
-	configFile := initConfig()
-
-	// Проверим что файл конфига существует
-	checkConfigFile(configFile)
+	cuc := usecase.ConfigUseCase{}
+	cuc.CreateConfig()
+	cuc.InitConfig()
+	cuc.CheckConfigFile()
 
 	// Получим аргументы из файла конфигурации
-	path, commands := getArgsFromConfigFile(configFile)
+	path, commands := cuc.GetArgsFromConfigFile()
 
 	// Начнем следить за файлами в директории
 	workWithDir(path, commands)
-}
-
-func initConfig() string {
-	// Определим переменные для параметров.
-	var configFile string
-
-	// Добавим параметры в флаги.
-	flag.StringVar(&configFile, "c", "./config/config.yaml", "Config file")
-
-	// Разобрать аргументы.
-	flag.Parse()
-
-	// Выведем параметры.
-	fmt.Println("Config file:", configFile)
-
-	// Проверим аргументы.
-	if len(os.Args) < 2 {
-		fmt.Println("Not enough arguments provided")
-		os.Exit(1)
-	}
-	return configFile
-}
-
-func getArgsFromConfigFile(configFile string) (string, []string) {
-	yamlFile, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	config := config{}
-	err = yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-
-	fmt.Printf("Path: %s\nCommands: %s\n", config.Path, config.Commands)
-	return config.Path, config.Commands
-}
-
-func checkConfigFile(filePath string) {
-	_, err := os.Stat(filePath)
-	if os.IsNotExist(err) {
-		fmt.Printf("Файл не найден по указанному пути: %s\n", filePath)
-	} else {
-		fmt.Printf("Найден конфигурационный файл: %s\n", filePath)
-	}
-
 }
 
 func workWithDir(dirPath string, commands []string) {
