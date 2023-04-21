@@ -61,10 +61,11 @@ func workWithDir(dirPath string, commands []string, db usecase.Db) {
 
 func runCmd(commands []string) {
 	for _, cmd := range commands {
+		var execCmd *exec.Cmd
 		if runtime.GOOS == "windows" {
-			execCmd := exec.Command("cmd", "/C", cmd)
+			execCmd = exec.Command("cmd", "/C", cmd)
 		} else {
-			execCmd := exec.Command("sh", "-c", cmd)
+			execCmd = exec.Command("sh", "-c", cmd)
 		}
 		
 		err := execCmd.Run()
