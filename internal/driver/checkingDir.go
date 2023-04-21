@@ -60,7 +60,7 @@ func workWithDir(dirPath string, commands []string, db usecase.Db) {
 
 func runCmd(commands []string) {
 	for _, cmd := range commands {
-		execCmd := exec.Command("sh", "-c", cmd)
+		execCmd := exec.Command(cmd)
 		err := execCmd.Run()
 		if err != nil {
 			log.Fatalf("error: %v", err)
