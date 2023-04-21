@@ -2,3 +2,9 @@ path: "/home/vladislav/Documents/work/postgres_pro/golang"
 commands:
   - "echo hello >> /home/vladislav/Documents/tt.txt"
   - "echo hello world >> /home/vladislav/Documents/tt.txt"
+db:
+  host: "localhost"
+  username: "vladislav"
+  password: ""
+  dbname: "postgres"
+  port: 5432

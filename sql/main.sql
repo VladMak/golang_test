@@ -1,0 +1,1 @@
+create table changes (id serial, time_change timestamp default now(), path text);

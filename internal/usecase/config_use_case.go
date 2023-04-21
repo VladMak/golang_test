@@ -3,7 +3,6 @@ package usecase
 import (
 	"github.com/VladMak/golang_test/internal/domain"
 	"fmt"
-	"flag"
 	"os"
 	"io/ioutil"
 	"log"
@@ -13,36 +12,20 @@ import (
 type ConfigUseCase struct {
 	DomainConfig domain.Config
 	filePath string
+	ConfigDb domain.ConfigDb
 }
 
 func (cuc *ConfigUseCase) CreateConfig() {
 	cuc.DomainConfig = domain.Config{}
+	cuc.ConfigDb = domain.ConfigDb{}
 }
 
-
-// Инициализация пути до файла конфигурации
-func (cuc *ConfigUseCase) InitConfig() {
-	// Определим переменные для параметров.
-	var configFile string
-
-	// Добавим параметры в флаги.
-	flag.StringVar(&configFile, "c", "./config/config.yaml", "Config file")
-
-	// Разобрать аргументы.
-	flag.Parse()
-
-	// Выведем параметры.
-	fmt.Println("Config file:", configFile)
-
-	// Проверим аргументы.
-	if len(os.Args) < 2 {
-		fmt.Println("Not enough arguments provided")
-		os.Exit(1)
-	}
-	cuc.filePath = configFile
+func (cuc *ConfigUseCase) SetConfigPath(path string) {
+	cuc.filePath = path
 }
 
 // Получаем аргументы из файла конфигурации
+// Возможно перенести логику в драйвер, а сюда передать только параметры - TODO
 func (cuc *ConfigUseCase) GetArgsFromConfigFile() (string, []string) {
 	yamlFile, err := ioutil.ReadFile(cuc.filePath)
 	if err != nil {
@@ -56,6 +39,22 @@ func (cuc *ConfigUseCase) GetArgsFromConfigFile() (string, []string) {
 
 	fmt.Printf("Path: %s\nCommands: %s\n", config.Path, config.Commands)
 	return config.Path, config.Commands
+}
+
+func (cuc *ConfigUseCase) GetConfigDb() domain.ConfigDb {
+	yamlFile, err := ioutil.ReadFile(cuc.filePath)
+	if err != nil {
+		log.Printf("yamlFile.Get err #%v ", err)
+	}
+
+	config := cuc.ConfigDb
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	fmt.Printf("DB CONFIG: %v\n", config.Db)
+	return config
 }
 
 // Проверка на существование файла конфигурации
