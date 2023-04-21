@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"github.com/VladMak/golang_test/internal/usecase"
 	"github.com/VladMak/golang_test/internal/adapter"
+	"runtime"
 )
 
 func CheckingDir() {
@@ -60,7 +61,12 @@ func workWithDir(dirPath string, commands []string, db usecase.Db) {
 
 func runCmd(commands []string) {
 	for _, cmd := range commands {
-		execCmd := exec.Command(cmd)
+		if runtime.GOOS == "windows" {
+			execCmd := exec.Command("cmd", "/C", cmd)
+		} else {
+			execCmd := exec.Command("sh", "-c", cmd)
+		}
+		
 		err := execCmd.Run()
 		if err != nil {
 			log.Fatalf("error: %v", err)
